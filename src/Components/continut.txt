@@ -1,0 +1,98 @@
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+ifstream inF("sort_div.in");
+ofstream outF("sort_div.out");
+
+int getDivizori(int x)
+{
+    int nr = 0;
+    for (int i = 1; i <= x / 2; i++)
+    {
+        if (x % i == 0)
+        {
+            nr++;
+            if (i * i != x)
+            {
+                nr++;
+            }
+        }
+    }
+    return nr;
+}
+
+int primaCifra(int x)
+{
+    int x2 = x;
+    while (x2 >= 10)
+    {
+        x2 /= 10;
+    }
+    return x2;
+}
+
+struct elem
+{
+    int nr, nrd, nrc, pc;
+} v[1001];
+
+bool so(elem a, elem b)
+{
+    if (a.nrd < b.nrd)
+        return true;
+    else
+    {
+        if (a.nrd > b.nrd)
+            return false;
+        else
+        {
+            if (a.nrc < b.nrc)
+                return true;
+            else
+            {
+                if (a.nrc > b.nrc)
+                    return false;
+                else
+                {
+                    if (a.pc < b.pc)
+                        return true;
+                    else
+                    {
+                        if (a.pc > b.pc)
+                            return false;
+                        else
+                        {
+                            if (a.nr < b.nr)
+                                return true;
+                            else
+                                return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+int main()
+{
+    int n, i;
+    inF >> n;
+    for (i = 0; i < n; i++)
+    {
+        inF >> v[i].nr;
+        v[i].nrc = v[i].nr % 9;
+        v[i].nrd = getDivizori(v[i].nr);
+        v[i].pc = primaCifra(v[i].nr);
+    }
+
+    sort(v, v + n, so);
+
+    for (i = 0; i < n; i++)
+    {
+        outF << v[i].nr << " ";
+    }
+    return 0;
+}
