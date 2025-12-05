@@ -19,9 +19,20 @@
 .main1_title span {
   color: #6366f1;
 }
-
+.logoTemp{
+  margin: 30px;
+  font-size: 3rem;
+  cursor: pointer;
+}
+.logoTemp span:first-child{
+  font-size: 2rem;
+}
+.logoTemp span:last-child{
+  color: #6366f1;
+}
 .card {
-  width: 80%;
+  min-width: 80%;
+  width: max-content;
   height: 80%;
   margin: 20px auto;
   padding: 10px;
@@ -51,7 +62,7 @@ textarea:focus {
 }
 
 .card:hover {
-  transform: translateY(-7px);
+  /* transform: translateY(-7px); */
   box-shadow: 0px 10px 10px black;
 }
 

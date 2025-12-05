@@ -20,7 +20,7 @@ function Home() {
         <div className="infoContainer" onClick={() => setShowInfo(false)}>
           <div className="infoDiv">
             <h1>
-              Share link: {document.location.href}preview/{id}
+              Share link: <a href={`${document.location.href}preview/${id}`}>{document.location.href}preview/{id}</a>
             </h1>
             <MdOutlineContentCopy
               style={{ cursor: "pointer" }}
