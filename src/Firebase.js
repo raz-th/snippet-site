@@ -2,22 +2,15 @@ import { initializeApp } from "firebase/app";
 import { collection, addDoc, getFirestore, doc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-
-  apiKey: "AIzaSyDmKqFdu3qNoNYHrIDLekISUDpq1nnuow8",
-
-  authDomain: "snippet-bd609.firebaseapp.com",
-
-  projectId: "snippet-bd609",
-
-  storageBucket: "snippet-bd609.firebasestorage.app",
-
-  messagingSenderId: "199616564560",
-
-  appId: "1:199616564560:web:320f3910b228e8ee14f055",
-
-  measurementId: "G-2EGMFZ9F04"
-
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
