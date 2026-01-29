@@ -1,95 +1,183 @@
-import { useState } from "react";
-import { MdOutlineFileUpload, MdOutlineContentCopy } from "react-icons/md";
+import React, { useState } from "react";
+import { MdOutlineFileUpload, MdCheckCircle } from "react-icons/md";
+import { IoCopyOutline } from "react-icons/io5";
 import { storeCodeAndGetId } from "../Firebase";
+import "../App.css";
+
+// Language configuration
+const languages = [
+  { value: "cpp", label: "C++", ext: "cpp" },
+  { value: "c", label: "C", ext: "c" },
+
+  { value: "javascript", label: "JavaScript", ext: "js" },
+  { value: "typescript", label: "TypeScript", ext: "ts" },
+
+  { value: "python", label: "Python", ext: "py" },
+
+  { value: "java", label: "Java", ext: "java" },
+  { value: "csharp", label: "C#", ext: "cs" },
+
+  { value: "go", label: "Go", ext: "go" },
+  { value: "rust", label: "Rust", ext: "rs" },
+
+  { value: "php", label: "PHP", ext: "php" },
+  { value: "ruby", label: "Ruby", ext: "rb" },
+
+  { value: "swift", label: "Swift", ext: "swift" },
+  { value: "kotlin", label: "Kotlin", ext: "kt" },
+  { value: "dart", label: "Dart", ext: "dart" },
+
+  { value: "bash", label: "Bash / Shell", ext: "sh" },
+
+  { value: "json", label: "JSON", ext: "json" },
+  { value: "yaml", label: "YAML", ext: "yml" },
+  { value: "xml", label: "HTML / XML", ext: "html" },
+  { value: "markdown", label: "Markdown", ext: "md" },
+
+  { value: "sql", label: "SQL", ext: "sql" },
+
+  { value: "dockerfile", label: "Dockerfile", ext: "Dockerfile" }
+];
+
 
 function Home() {
   const [showInfo, setShowInfo] = useState(false);
   const [id, setId] = useState("");
   const [text, setText] = useState("");
+  const [isSharing, setIsSharing] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  // Language State (Defaulting to C++)
+  const [language, setLanguage] = useState(languages[0]);
 
   const share = () => {
-    storeCodeAndGetId(text).then((id) => {
-      setId(id);
-      setShowInfo(true);
+    if (!text.trim()) return;
+
+    setIsSharing(true);
+    // You could also pass 'language.value' to your Firebase function if you want to store the language type
+    storeCodeAndGetId(text, language.value)
+      .then((id) => {
+        setId(id);
+        setShowInfo(true);
+        setIsSharing(false);
+        setCopySuccess(false);
+      })
+      .catch((err) => {
+        console.error("Error sharing code:", err);
+        setIsSharing(false);
+      });
+  };
+
+  const handleCopy = (e) => {
+    e.stopPropagation();
+    const link = `${window.location.href}preview/${id}`;
+
+    navigator.clipboard.writeText(link).then(() => {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
     });
+  };
+
+  const closeModal = () => {
+    setShowInfo(false);
   };
 
   return (
     <div className="App">
+      <div className="ambient-glow"></div>
+
       {showInfo && (
-        <div className="infoContainer" onClick={() => setShowInfo(false)}>
-          <div className="infoDiv">
-            <h1>
-              Share link: <a href={`${document.location.href}preview/${id}`}>{document.location.href}preview/{id}</a>
-            </h1>
-            <MdOutlineContentCopy
-              style={{ cursor: "pointer" }}
-              size={40}
-              onClick={(e) => {
-                e.stopPropagation();
-                navigator.clipboard.writeText(
-                  `${document.location.href}preview/${id}`
-                );
-              }}
-            />
+        <div className="infoContainer" onClick={closeModal}>
+          <div className="infoDiv" onClick={(e) => e.stopPropagation()}>
+            <h2>Code Snippet Ready!</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '10px' }}>Here is your shareable link:</p>
+
+            <div className="link-box">
+              {window.location.href}preview/{id}
+            </div>
+
+            <button className="copy-btn" onClick={handleCopy}>
+              {copySuccess ? (
+                <>
+                  <MdCheckCircle style={{ color: '#10b981' }} /> Copied!
+                </>
+              ) : (
+                <>
+                  <IoCopyOutline /> Copy Link
+                </>
+              )}
+            </button>
+
+            <div className="close-hint">Click anywhere or press ESC to close</div>
           </div>
         </div>
-      )}{" "}
-      <main className="main1">
-        <h1 className="main1_title">
-          Share Code in a <span>Snap</span>
-        </h1>
-        <h3>
-          The fastest way to share code snippets with your team. No accounts, no
-          fuss - just pure coding speed.
-        </h3>
-      </main>
-      <section>
-        <div className="card add">
-          <div className="header">
-            <div className="top">
-              <div className="circle">
-                <span className="red circle2"></span>
+      )}
+
+      <main className="container">
+        <section className="hero">
+          <h1>
+            Share Code in a <span>Snap</span>
+          </h1>
+          <h3>
+            The fastest way to share code snippets with your team. No accounts,
+            no fuss - just pure coding speed.
+          </h3>
+        </section>
+
+        <section>
+          <div className="editor-wrapper">
+
+            {/* --- Window Header --- */}
+            <div className="window-bar">
+              <div className="dots">
+                <span className="dot red"></span>
+                <span className="dot yellow"></span>
+                <span className="dot green"></span>
               </div>
-              <div className="circle">
-                <span className="yellow circle2"></span>
-              </div>
-              <div className="circle">
-                <span className="green circle2"></span>
-              </div>
-              <div className="title">
-                <p>new_snippet.cpp</p>
+
+              {/* --- Language Dropdown --- */}
+              <div className="lang-wrapper">
+                <select
+                  className="lang-select"
+                  value={language.value}
+                  onChange={(e) => {
+                    const selected = languages.find(lang => lang.value === e.target.value);
+                    setLanguage(selected);
+                  }}
+                >
+                  {languages.map((lang) => (
+                    <option key={lang.value} value={lang.value}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                marginTop: 20,
-              }}
-            >
+
+            {/* --- Editor Body --- */}
+            <div className="code-area-container">
               <textarea
                 value={text}
-                onChange={(e) => setText(e.currentTarget.value)}
-                placeholder="Paste your code here..."
+                onChange={(e) => setText(e.target.value)}
+                placeholder={`// Paste your ${language.label} code here...`}
               ></textarea>
             </div>
-            <div className="card_bottom_bar">
-              {/* <select>
-            <option value="cpp">C++</option>
-            <option value="cs">C#</option>
-            <option value="javascript">JavaScript</option>
-            <option value="python">Python</option>
-          </select> */}
-              <div />
-              <button className="btn" onClick={share}>
-                <MdOutlineFileUpload size={40} /> Create Share Link
+
+            {/* --- Action Button --- */}
+            <div className="actions">
+              <button className="btn" onClick={share} disabled={isSharing}>
+                {isSharing ? (
+                  "Generating..."
+                ) : (
+                  <>
+                    <MdOutlineFileUpload size={24} /> Create Share Link
+                  </>
+                )}
               </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
     </div>
   );
 }

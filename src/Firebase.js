@@ -14,13 +14,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-export async function storeCodeAndGetId(codeString) {
+export async function storeCodeAndGetId(codeString, language) {
   try {
     const codesCollectionRef = collection(db, "codes");
     const docRef = await addDoc(codesCollectionRef, {
       code: codeString,
       createdAt: new Date(),
-    
+      language
     });
 
     const documentId = docRef.id;
@@ -51,9 +51,9 @@ export async function getCodeById(documentId) {
 
       // 4. Extract the 'code' field from the document data
       const documentData = docSnap.data();
-      const codeString = documentData.code;
+      // const codeString = documentData.code;
       
-      return codeString;
+      return documentData;
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document found with ID:", documentId);
